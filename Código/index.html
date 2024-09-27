@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento de Acesso</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 80%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #messages {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            height: 300px;
+            overflow-y: auto;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .message {
+            padding: 8px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.8.2.7.js"></script>
+</head>
+<body>
+
+    <div id="container">
+        <h1>Registro de Presença</h1>
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        const showMessage = (msg) => {
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.innerText = msg;
+            document.getElementById('messages').appendChild(message);
+        };
+
+        let pubnub;
+
+        const setupPubNub = () => {
+            // configuração do PubNub
+            pubnub = new PubNub({
+                publishKey: "pub-c-6e5bc9c9-1871-4287-89e7-37ec83a4d2ec",
+                subscribeKey: "sub-c-e71d1d1d-845e-4396-abfb-a556997f18ea",
+                userId: "index-page-user"
+            });
+            
+            // inscrição no canal
+            const channel = "Sala_de_Segurança";
+            pubnub.subscribe({ channels: [channel] });
+            
+            pubnub.addListener({
+                message: function(event) {
+                    console.log(event.message);
+                    showMessage(event.message.text);
+                }
+            });
+        };
+
+        window.onload = setupPubNub;
+    </script>
+</body>
+</html>
